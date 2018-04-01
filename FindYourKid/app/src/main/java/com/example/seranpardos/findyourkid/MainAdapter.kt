@@ -11,15 +11,13 @@ import kotlinx.android.synthetic.main.school_bus.view.*
 
 class MainAdapter(val apiResponse: ApiResponse): RecyclerView.Adapter<CustomViewHolder>() {
 
-    val busesNames = listOf<String>("First Bus", "Second Bus", "Third Bus","Fourth Bus", "a", "b ")
-
     //number of items
     override fun getItemCount(): Int {
         return apiResponse.school_buses.count()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-        var layoutInflater = LayoutInflater.from(parent?.context)
+        val layoutInflater = LayoutInflater.from(parent?.context)
         val cellForRow = layoutInflater.inflate(R.layout.school_bus, parent, false)
         return CustomViewHolder(cellForRow)
     }
@@ -32,13 +30,27 @@ class MainAdapter(val apiResponse: ApiResponse): RecyclerView.Adapter<CustomView
         Picasso.get().load(bus.img_url).into(holder?.view?.imageView_bus)
         holder?.view?.constraint.setBackgroundColor(Color.DKGRAY)
 
+        holder?.bus = bus
     }
 }
 
-class CustomViewHolder(val view: View): RecyclerView.ViewHolder(view) {
+class CustomViewHolder(val view: View, var bus: SchoolBus? =null): RecyclerView.ViewHolder(view) {
+
+    companion object {
+        val BUS_NAME_KEY =  "BUS_NAME"
+        val BUS_DESCRIPTION_KEY = "BUS_DESCRIPTION"
+        val BUS_IMAGE_KEY = "BUS_IMAGE"
+        val BUS_STOPS_URL = "BUS_STOPS"
+    }
+
     init {
         view.setOnClickListener {
             val intent = Intent(view.context, Details_Activity::class.java)
+
+            intent.putExtra(BUS_NAME_KEY, bus?.name)
+            intent.putExtra(BUS_DESCRIPTION_KEY, bus?.description)
+            intent.putExtra(BUS_IMAGE_KEY, bus?.img_url)
+            intent.putExtra(BUS_STOPS_URL, bus?.stops_url)
 
             view.context.startActivity(intent)
 
