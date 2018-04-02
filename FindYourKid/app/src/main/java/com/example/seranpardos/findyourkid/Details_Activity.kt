@@ -29,13 +29,14 @@ class Stop (
 
 class Details_Activity() : AppCompatActivity(), OnMapReadyCallback {
 
-    var stopsResponse: StopsResponse? = null
+    private var mMap: GoogleMap? = null
+    internal lateinit var MarkerPoints: ArrayList<LatLng>
+    private var stopsResponse: StopsResponse?=null
 
-    override fun onMapReady(googleMap: GoogleMap?) {
-        val sydney = LatLng(4.678737, -74.066001)
-        googleMap?.addMarker(MarkerOptions().position(sydney)
-                .title("Marker in Sydney"))
-        googleMap?.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        override fun onMapReady(googleMap: GoogleMap) {
+            mMap = googleMap
+            val stops = intent.getStringExtra(CustomViewHolder.BUS_STOPS_URL)
+            read(stops)
 
 
     }
@@ -43,22 +44,20 @@ class Details_Activity() : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+        println("onCreate")
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        MarkerPoints = ArrayList<LatLng>()
 
         val navBarTitle = intent.getStringExtra(CustomViewHolder.BUS_NAME_KEY)
         supportActionBar?.title = navBarTitle
         val busDescription = intent.getStringExtra(CustomViewHolder.BUS_DESCRIPTION_KEY)
         val busImage = intent.getStringExtra(CustomViewHolder.BUS_IMAGE_KEY)
-        val stops = intent.getStringExtra(CustomViewHolder.BUS_STOPS_URL)
+
         Picasso.get().load(busImage).into(imageView_bus)
         textView_description.text = busDescription
-
-        textView_stops.text = stops
-        read(stops)
-
 
 
 
@@ -98,12 +97,18 @@ class Details_Activity() : AppCompatActivity(), OnMapReadyCallback {
                  * String where the retrieved JSON  will be saved
                  */
                 stopsResponse = gson.fromJson(response, StopsResponse::class.java)
-/*
-                for (Stop in stopsResponse.stops){
-                    val addMarker = googleMap?.addMarker(MarkerOptions().position(LatLng(Stop.lat, Stop.lng)))
-
+                println(stopsResponse)
+                runOnUiThread {
+                    for ((index, stop) in stopsResponse!!.stops.withIndex()) {
+                        val options = MarkerOptions()
+                        val point = LatLng(stop.lat, stop.lng)
+                        options.position(point)
+                        options.title("Parada número: "+index)
+                        mMap!!.addMarker(options)
+                        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 15f))
+                    }
                 }
-*/
+
             }
         })
 

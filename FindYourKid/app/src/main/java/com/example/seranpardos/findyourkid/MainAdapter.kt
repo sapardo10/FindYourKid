@@ -28,7 +28,6 @@ class MainAdapter(val apiResponse: ApiResponse): RecyclerView.Adapter<CustomView
         holder?.view?.textView_name?.text = bus.name
         holder?.view?.textView_description?.text = bus.description
         Picasso.get().load(bus.img_url).into(holder?.view?.imageView_bus)
-        holder?.view?.constraint.setBackgroundColor(Color.DKGRAY)
 
         holder?.bus = bus
     }
