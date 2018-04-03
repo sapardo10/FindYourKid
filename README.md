@@ -15,6 +15,7 @@ section of the screen and a map on the bottom. The map shows a list of markers t
 * It is develop in Kotlin
 * Uses gradle for dependency managment
 * It follows some directives about UI design (Colors and contrast)
+* It has a animation on the first screen to load a logo before going into the application
 
 -------------------------------------------------------------------------------------------
 Eeny, meeny, miny, moe. With wich bus should I go?
