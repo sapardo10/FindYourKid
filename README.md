@@ -18,4 +18,4 @@ section of the screen and a map on the bottom. The map shows a list of markers t
 * It has a animation on the first screen to load a logo before going into the application
 
 -------------------------------------------------------------------------------------------
-Eeny, meeny, miny, moe. With wich bus should I go?
+Eeny, meeny, miny, moe. With which bus should I go?
