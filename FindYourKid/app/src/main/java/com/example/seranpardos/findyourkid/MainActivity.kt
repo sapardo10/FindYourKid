@@ -1,22 +1,21 @@
 package com.example.seranpardos.findyourkid
 
-import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.TextView
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
 
 /**
- * Data class that models the way school buses are represented in this application
+ * Class that models the way school buses are delivered on the JSON in this application
  */
-
 class ApiResponse(var school_buses: List<SchoolBus>)
 
+/**
+ * Class that models the way the buses are represented in this application
+ */
 class SchoolBus (
             val id: Int,
             val name: String,
@@ -26,24 +25,22 @@ class SchoolBus (
 )
 
 
+@Suppress("NAME_SHADOWING")
 /**
- * MainActivity
+ * MainActivity. It shows a list of the school buses based on the JSON retrieved
+ * Second Activity of the App
  */
 class MainActivity : AppCompatActivity() {
 
-    //----------------------ONCREATE-------------------------
-    /**
-     * onCreate method
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //Assigns the layout manager to the recyclerView
         recyclerView_main.layoutManager = LinearLayoutManager(this)
-       // recyclerView_main.adapter = MainAdapter()
-
-
+        //Url from which the JSON is retrieved
         val url = "https://api.myjson.com/bins/10yg1t"
+        //Call to read the data on the url
         read(url)
 
     }
@@ -64,14 +61,14 @@ class MainActivity : AppCompatActivity() {
         val request = Request.Builder().url(url).build()
 
         //It sends the request to the server (API)
-        var response = client.newCall(request).enqueue(object : Callback {
+        client.newCall(request).enqueue(object : Callback {
             //On failure throws a "Toast" message to user indicating the problem
             override fun onFailure(call: Call, e: IOException) {
-                println("Failure fetching the data from the source. Send data to user")
+                Thread.setDefaultUncaughtExceptionHandler { _, e -> System.err.println(e.message) }
             }
             //On success assigns the response in String to busList
             override fun onResponse(call: Call, response: Response){
-                val response = response.body()?.string()
+                val response: String? = response.body()?.string()
 
                 /**
                  * To parse the Json received
@@ -81,10 +78,13 @@ class MainActivity : AppCompatActivity() {
                 /**
                  * String where the retrieved JSON (the main one) will be saved
                  */
-                val busList = gson.fromJson(response, ApiResponse::class.java)
+                val busList = gson.fromJson(
+                        response,
+                        ApiResponse::class.java
+                )
 
 
-
+                //Since this changes the UI, it has to go on main Thread
                 runOnUiThread {
                     recyclerView_main.adapter = MainAdapter(busList)
                 }
